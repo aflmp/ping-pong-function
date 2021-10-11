@@ -47,6 +47,7 @@ jobs:
           --trigger-http \
           --entry-point Ping \
           --region us-central1 \
+          --project ${{ secrets.PROJECT_ID }} \
           --max-instances 1 \
           --security-level secure-always \
           --service-account ${{ secrets.RUNTIME_SERVICE_ACCOUNT }} \
