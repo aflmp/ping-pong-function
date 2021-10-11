@@ -35,13 +35,13 @@ jobs:
         workload_identity_provider: ${{ secrets.WID_PROVIDER }}
         service_account: ${{ secrets.AUTH_SERVICE_ACCOUNT }}
     - name: Deploy cloud function
-        run: |
-          gcloud functions deploy ping-pong-cf \
-            --runtime go113 \
-            --memory 128MB \
-            --trigger-http \
-            --region us-central1 \
-            --max-instances 1 \
-            --security-level secure-always \
-            --service-account ${{ secrets.RUNTIME_SERVICE_ACCOUNT }} \
-            --allow-unauthenticated
+      run: |
+        gcloud functions deploy ping-pong-cf \
+          --runtime go113 \
+          --memory 128MB \
+          --trigger-http \
+          --region us-central1 \
+          --max-instances 1 \
+          --security-level secure-always \
+          --service-account ${{ secrets.RUNTIME_SERVICE_ACCOUNT }} \
+          --allow-unauthenticated
