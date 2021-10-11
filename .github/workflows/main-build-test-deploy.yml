@@ -37,9 +37,11 @@ jobs:
     - name: Deploy cloud function
       run: |
         gcloud functions deploy ping-pong-cf \
+          --source . \
           --runtime go113 \
           --memory 128MB \
           --trigger-http \
+          --entry-point Ping \
           --region us-central1 \
           --max-instances 1 \
           --security-level secure-always \
