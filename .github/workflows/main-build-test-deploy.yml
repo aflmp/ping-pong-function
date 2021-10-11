@@ -31,15 +31,21 @@ jobs:
       name: Authenticate to Google Cloud
       uses: google-github-actions/auth@v0.3.1
       with:
-        token_format: access_token
+        create_credentials_file: 'true'
         workload_identity_provider: ${{ secrets.WID_PROVIDER }}
         service_account: ${{ secrets.AUTH_SERVICE_ACCOUNT }}
+    - id: 'gcloud'
+      name: 'gcloud'
+      run: |-
+        gcloud auth login --brief --cred-file="${{ steps.auth.outputs.credentials_file_path }}"
     - name: Deploy cloud function
       run: |
         gcloud functions deploy ping-pong-cf \
+          --source . \
           --runtime go113 \
           --memory 128MB \
           --trigger-http \
+          --entry-point Ping \
           --region us-central1 \
           --max-instances 1 \
           --security-level secure-always \
