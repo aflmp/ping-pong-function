@@ -1,29 +1,36 @@
 name: PR Build Test
-
-on: 
-  push:
-    branches:
-    - main
-  pull_request:
-
+on: [pull_request]
 jobs:
-  build-test-cloud-function:
+  build_test:
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-go@v2
+    - uses: actions/checkout@v3
+    - uses: actions/setup-go@v4
       with:
-        go-version: '1.13'
+        go-version: '1.20'
     - run: cd cloud-function; go build
     - run: cd cloud-function; go test -v ./...
-  
-  build-test-lambda-function:
+  deploy:
+    needs: build_test
     runs-on: ubuntu-20.04
+    permissions:
+      contents: read
+      id-token: write
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-go@v2
+    - uses: actions/checkout@v3
+    - id: auth
+      name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
       with:
-        go-version: '1.17'
-    - run: cd lambda-function; go build
-    - run: cd lambda-function; go test -v ./...
-    
+        project: ${{ secrets.PROJECT_ID }}
+        workload_identity_provider: ${{ secrets.WID_PROVIDER }}
+        service_account: ${{ secrets.DEPLOYER_SERVICE_ACCOUNT }}
+    - id: deploy
+      uses: google-github-actions/deploy-cloud-functions@v2
+      with:
+        name: ping-pong-function
+        entry_point: Ping
+        runtime: go121
+        max_instances: 1
+        service_account_email: ${{ secrets.RUNTIME_SERVICE_ACCOUNT }}
+        source_dir: cloud-function

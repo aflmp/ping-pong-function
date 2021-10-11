@@ -1,0 +1,53 @@
+name: Main Build Test Deploy
+on: 
+  push:
+    branches: [push]
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-go@v2
+      with:
+        go-version: '1.13'
+    - run: go build
+  test:
+    needs: build
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-go@v2
+      with:
+        go-version: '1.13'
+    - run: go test -v 
+  deploy:
+    needs: [build, test]
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+    - id: auth
+      name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v0.3.1
+      with:
+        create_credentials_file: 'true'
+        workload_identity_provider: ${{ secrets.WID_PROVIDER }}
+        service_account: ${{ secrets.AUTH_SERVICE_ACCOUNT }}
+    - id: 'gcloud'
+      name: 'gcloud'
+      run: |-
+        gcloud auth login --brief --cred-file="${{ steps.auth.outputs.credentials_file_path }}"
+    - name: Deploy cloud function
+      run: |
+        gcloud functions deploy ping-pong-cf \
+          --source . \
+          --runtime go113 \
+          --memory 128MB \
+          --trigger-http \
+          --entry-point Ping \
+          --region us-central1 \
+          --project ${{ secrets.PROJECT_ID }} \
+          --max-instances 1 \
+          --security-level secure-always \
+          --allow-unauthenticated

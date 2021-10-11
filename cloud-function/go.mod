@@ -1,3 +1,3 @@
 module github.com/aflmp/ping-pong-function/cloud-function
 
-go 1.13
+go 1.21
