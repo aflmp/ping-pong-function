@@ -1,2 +1,3 @@
-# ping-pong-cf
-a simple HTTP Cloud Function
+# ping-pong-function
+- HTTP Cloud Function
+- Lambda Function
