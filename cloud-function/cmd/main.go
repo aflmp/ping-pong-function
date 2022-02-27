@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	function "github.com/aflmp/ping-pong-cf"
+	function "github.com/aflmp/ping-pong-function/cloud-function"
 )
 
 func main() {

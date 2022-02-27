@@ -1,20 +1,25 @@
 name: PR Build Test
+
 on: [pull_request]
+
 jobs:
-  build:
+  build-test-cloud-function:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-go@v2
       with:
         go-version: '1.13'
-    - run: go build
-  test:
-    needs: build
+    - run: cd cloud-function; go build
+    - run: cd cloud-function; go test -v ./...
+  
+  build-test-lambda-function:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-go@v2
       with:
-        go-version: '1.13'
-    - run: go test -v 
+        go-version: '1.17'
+    - run: cd lambda-function; go build
+    - run: cd lambda-function; go test -v ./...
+    
