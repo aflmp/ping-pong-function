@@ -6,3 +6,5 @@ require (
 	github.com/aws/aws-lambda-go v1.28.0
 	github.com/sethvargo/go-envconfig v0.5.0
 )
+
+require github.com/google/go-cmp v0.5.7 // indirect
